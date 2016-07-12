@@ -1,0 +1,14 @@
+hash: 3d12c182339cf78ee86e5a32dc4e07444a9628c2b52758e6a00ef6ed679d8b76
+updated: 2016-07-11T14:59:47.675497937+02:00
+imports:
+- name: github.com/codegangsta/cli
+  version: 166bb4fa6231099fd582b9d0b33b647d8112a9f5
+- name: github.com/exago/envconfig
+  version: 8b1c59eae986013d3be5deddbf1e89f18d25ffaa
+- name: github.com/Sirupsen/logrus
+  version: f3cfb454f4c209e6668c95216c4744b8fddb2356
+- name: golang.org/x/sys
+  version: a408501be4d17ee978c04a618e7a1b22af058c0e
+  subpackages:
+  - unix
+devImports: []
