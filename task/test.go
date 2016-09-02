@@ -1,3 +1,8 @@
+// Copyright (c) 2016, Hotolab. All rights reserved.
+//
+// Use of this source code is governed by a license
+// that can be found in the LICENSE file.
+
 package task
 
 import (
@@ -27,19 +32,16 @@ type test struct {
 
 // TestRunner is a runner used for testing Go projects
 func TestRunner() Runnable {
-	return &testRunner{Runner{Label: testName, Parallel: true}}
+	return &testRunner{Runner{Label: "Go Test", parallel: true}}
 }
 
-// Execute ...
+// Execute tests and determine which tests are passing/failing
 func (r *testRunner) Execute() {
 	defer r.trackTime(time.Now())
 
 	out, err := exec.Command("go", "test", "-v", "./...").CombinedOutput()
 	if err != nil {
-		r.Error = &RunnerError{
-			RawOutput: string(out),
-			Message:   err,
-		}
+		r.toRunnerError(err)
 		return
 	}
 
@@ -47,6 +49,7 @@ func (r *testRunner) Execute() {
 	r.parseTestOutput()
 }
 
+// parseTestOutput parses test output and fills Data property
 func (r *testRunner) parseTestOutput() {
 	pkgs, p, tests := []pkg{}, pkg{}, []test{}
 

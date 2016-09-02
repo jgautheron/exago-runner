@@ -1,14 +1,26 @@
-hash: 3d12c182339cf78ee86e5a32dc4e07444a9628c2b52758e6a00ef6ed679d8b76
-updated: 2016-07-11T14:59:47.675497937+02:00
+hash: 149bf3baf453dd0b552a01eec8a9d22c2a0d137e1e66e46ba18cab4fadae3e23
+updated: 2016-09-02T11:14:31.917619399+02:00
 imports:
 - name: github.com/codegangsta/cli
-  version: 166bb4fa6231099fd582b9d0b33b647d8112a9f5
-- name: github.com/exago/envconfig
-  version: 8b1c59eae986013d3be5deddbf1e89f18d25ffaa
+  version: a14d7d367bc02b1f57d88de97926727f2d936387
+- name: github.com/davecgh/go-spew
+  version: 6cf5744a041a0022271cefed95ba843f6d87fd51
+  subpackages:
+  - spew
+- name: github.com/hotolab/cov
+  version: f53c2e9ec29c23ae8f8b0d608cb5e4f1e10fcb6f
+- name: github.com/hotolab/envconfig
+  version: 0280e33525f5d88edb71638a80b31724153225ba
+- name: github.com/kelseyhightower/envconfig
+  version: 1e291572dcb9ba673cdcdb15e0f422702415ebaf
 - name: github.com/Sirupsen/logrus
-  version: f3cfb454f4c209e6668c95216c4744b8fddb2356
+  version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
 - name: golang.org/x/sys
-  version: a408501be4d17ee978c04a618e7a1b22af058c0e
+  version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
   subpackages:
   - unix
-devImports: []
+- name: golang.org/x/tools
+  version: 9deed8c6c1c89e0b6d68d727f215de8e851d1064
+  subpackages:
+  - cover
+testImports: []

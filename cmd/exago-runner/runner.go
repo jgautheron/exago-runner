@@ -1,9 +1,14 @@
+// Copyright (c) 2016, Hotolab. All rights reserved.
+//
+// Use of this source code is governed by a license
+// that can be found in the LICENSE file.
+
 package main
 
 import (
 	"github.com/codegangsta/cli"
 
-	"github.com/exago/runner/task"
+	"github.com/hotolab/exago-runner/task"
 )
 
 // RunnerCommand starts the task runner

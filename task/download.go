@@ -1,3 +1,8 @@
+// Copyright (c) 2016, Hotolab. All rights reserved.
+//
+// Use of this source code is governed by a license
+// that can be found in the LICENSE file.
+
 package task
 
 import (
@@ -5,7 +10,7 @@ import (
 	"os/exec"
 	"time"
 
-	. "github.com/exago/runner/config"
+	. "github.com/hotolab/exago-runner/config"
 )
 
 type downloadRunner struct {
@@ -15,7 +20,7 @@ type downloadRunner struct {
 // DownloadRunner is a runner used for downloading Go projects
 // from remote repositories such as Github, Bitbucket etc.
 func DownloadRunner() Runnable {
-	return &downloadRunner{Runner{Label: downloadName}}
+	return &downloadRunner{Runner{Label: "Go Get", breakOnError: true}}
 }
 
 // Execute, downloads a Go repository using the go get command
@@ -29,12 +34,11 @@ func (r *downloadRunner) Execute() {
 		return
 	}
 
+	// Go get the package
 	out, err := exec.Command("go", "get", "-d", "-t", Config.Repository+"/...").CombinedOutput()
 	if err != nil {
-		r.Error = &RunnerError{
-			RawOutput: string(out),
-			Message:   err,
-		}
+		// If we can't download, stop execution as BreakOnError is true with this runner
+		r.toRunnerError(err)
 		return
 	}
 
@@ -48,9 +52,6 @@ func (r *downloadRunner) toRepoDir() {
 	// Change directory
 	err := os.Chdir(Config.RepositoryPath)
 	if err != nil {
-		r.Error = &RunnerError{
-			RawOutput: err.Error(),
-			Message:   err,
-		}
+		r.toRunnerError(err)
 	}
 }

@@ -1,3 +1,8 @@
+// Copyright (c) 2016, Hotolab. All rights reserved.
+//
+// Use of this source code is governed by a license
+// that can be found in the LICENSE file.
+
 package main
 
 import (
@@ -6,7 +11,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 
-	. "github.com/exago/runner/config"
+	. "github.com/hotolab/exago-runner/config"
 )
 
 var (
