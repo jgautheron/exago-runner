@@ -28,10 +28,11 @@ func NewManager() *manager {
 
 	return &manager{
 		runners: map[string]Runnable{
-			downloadName: DownloadRunner(),
-			testName:     TestRunner(),
-			coverageName: CoverageRunner(),
-			proveName:    ProveRunner(),
+			downloadName:     DownloadRunner(),
+			testName:         TestRunner(),
+			coverageName:     CoverageRunner(),
+			proveName:        ProveRunner(),
+			thirdPartiesName: ThirdPartiesRunner(),
 		},
 	}
 }

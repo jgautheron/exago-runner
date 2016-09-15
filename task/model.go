@@ -5,13 +5,18 @@
 
 package task
 
-import "time"
+import (
+	"time"
+
+	log "github.com/Sirupsen/logrus"
+)
 
 const (
-	downloadName = "download"
-	testName     = "test"
-	coverageName = "coverage"
-	proveName    = "goprove"
+	downloadName     = "download"
+	testName         = "test"
+	coverageName     = "coverage"
+	proveName        = "goprove"
+	thirdPartiesName = "thirdparties"
 )
 
 // RunnerError is the struct containing processing errors
@@ -83,6 +88,7 @@ func (r *Runner) BreakOnError() bool {
 
 // toRunnerError converts a golang error to a Runner error
 func (r *Runner) toRunnerError(err error) {
+	log.Println(err)
 	r.Err = &RunnerError{
 		RawOutput: err.Error(),
 		Message:   err,
