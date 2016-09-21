@@ -5,11 +5,7 @@
 
 package task
 
-import (
-	"time"
-
-	log "github.com/Sirupsen/logrus"
-)
+import "time"
 
 const (
 	downloadName     = "download"
@@ -88,7 +84,6 @@ func (r *Runner) BreakOnError() bool {
 
 // toRunnerError converts a golang error to a Runner error
 func (r *Runner) toRunnerError(err error) {
-	log.Println(err)
 	r.Err = &RunnerError{
 		RawOutput: err.Error(),
 		Message:   err,
