@@ -6,19 +6,24 @@
 package task
 
 import (
+	"bytes"
 	"errors"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"regexp"
+	"runtime"
 	"strings"
+	"sync"
 
 	log "github.com/Sirupsen/logrus"
 
 	"github.com/hotolab/cov"
 )
 
-const coverMode = "count"
+const (
+	coverMode = "count"
+)
 
 type coverageRunner struct {
 	Runner
@@ -53,19 +58,12 @@ func (r *coverageRunner) Execute() {
 		return
 	}
 
-	raw, err := ioutil.ReadAll(r.tempFile)
-	if err != nil {
-		r.toRunnerError(err)
-		return
-	}
-
 	rep, err := cov.ConvertProfile(r.tempFile.Name())
 	if err != nil {
 		r.toRunnerError(err)
 		return
 	}
 
-	r.RawOutput = string(raw)
 	r.Data = rep
 }
 
@@ -105,43 +103,55 @@ func (r *coverageRunner) lookupTestFiles() error {
 		return err
 	}
 
-	outc, errc := make(chan string), make(chan string)
-	for _, pkg := range pkgs {
-		// Process package
-		go func(p string) {
-			res, err := r.processPackage(p)
-			if err != nil {
-				errc <- err.Error()
-				return
+	// Bufferize channel
+	tasks := make(chan string, 64)
+	var (
+		wg      sync.WaitGroup
+		errBuff bytes.Buffer
+		outBuff bytes.Buffer
+	)
+
+	// Create as much threads as we have CPUs
+	for i := 0; i < runtime.NumCPU(); i++ {
+		wg.Add(1)
+		go func() {
+			for pkg := range tasks {
+				res, err := r.processPackage(pkg)
+				if err != nil {
+					errBuff.WriteString(err.Error())
+					return
+				}
+				outBuff.WriteString(res)
 			}
-			outc <- res
-		}(pkg)
+			wg.Done()
+		}()
 	}
 
-	buff, errs := "", ""
-	for i := 0; i < len(pkgs); i++ {
-		select {
-		case err := <-errc:
-			errs += err
-
-		case out := <-outc:
-			buff += out
-		}
+	for _, pkg := range pkgs {
+		tasks <- pkg
 	}
+
+	// Close worker channel
+	close(tasks)
+
+	// Wait for the workers to finish
+	wg.Wait()
 
 	// Get errors (if any) and convert them to a runner error
+	errs := errBuff.String()
 	if errs != "" {
 		return errors.New(errs)
 	}
 
 	// Get content of the buffer and write it
 	// to the temp file attached to the runner
-	buff = regexp.MustCompile("mode: [a-z]+\n").ReplaceAllString(buff, "")
-	buff = "mode: " + coverMode + "\n" + buff
+	out := outBuff.String()
+	out = regexp.MustCompile("mode: [a-z]+\n").ReplaceAllString(out, "")
+	out = "mode: " + coverMode + "\n" + out
 
-	log.Debug(buff)
+	log.Debug(out)
 
-	if err := ioutil.WriteFile(r.tempFile.Name(), []byte(buff), 0644); err != nil {
+	if err := ioutil.WriteFile(r.tempFile.Name(), []byte(out), 0644); err != nil {
 		return err
 	}
 

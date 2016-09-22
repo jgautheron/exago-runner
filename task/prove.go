@@ -31,6 +31,5 @@ func (r *proveRunner) Execute() {
 	}
 	json.Unmarshal(cl, &checklist)
 
-	r.RawOutput = string(cl)
 	r.Data = checklist
 }

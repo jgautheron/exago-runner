@@ -32,7 +32,6 @@ func (r *thirdPartiesRunner) Execute() {
 		r.toRunnerError(err)
 	}
 
-	r.RawOutput = string(list)
 	r.Data = r.parseListOutput(string(list))
 }
 

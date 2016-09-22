@@ -42,7 +42,6 @@ func (r *testRunner) Execute() {
 	out, err := exec.Command("go", "test", "-v", "./...").CombinedOutput()
 	if err != nil {
 		r.toRunnerError(err)
-		return
 	}
 
 	r.RawOutput = string(out)
