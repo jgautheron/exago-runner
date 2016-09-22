@@ -1,13 +1,6 @@
 package: github.com/hotolab/exago-runner
 import:
 - package: github.com/Sirupsen/logrus
-  version: ^0.10.0
 - package: github.com/codegangsta/cli
-  version: ^1.18.1
-- package: github.com/davecgh/go-spew
-  version: ^1.0.0
-  subpackages:
-  - spew
 - package: github.com/hotolab/cov
-- package: github.com/hotolab/envconfig
-  version: ^1.0.0
+- package: github.com/kelseyhightower/envconfig

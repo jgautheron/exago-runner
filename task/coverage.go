@@ -10,27 +10,18 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"regexp"
 	"strings"
-	"sync"
 
 	log "github.com/Sirupsen/logrus"
 
 	"github.com/hotolab/cov"
-
-	. "github.com/hotolab/exago-runner/config"
 )
 
 const coverMode = "count"
 
-var (
-	modeRegex = regexp.MustCompile("mode: [a-z]+\n")
-)
-
 type coverageRunner struct {
 	Runner
-	ignore   []string
 	tempFile *os.File
 }
 
@@ -38,7 +29,6 @@ type coverageRunner struct {
 func CoverageRunner() Runnable {
 	return &coverageRunner{
 		Runner: Runner{Label: "Code Coverage", parallel: true},
-		ignore: []string{".git", "vendor"},
 	}
 }
 
@@ -54,10 +44,12 @@ func (r *coverageRunner) Execute() {
 
 	// temp file will be removed after processing
 	defer os.Remove(file.Name())
+
 	r.tempFile = file
 
-	r.lookupTestFiles()
-	if r.Err != nil {
+	err = r.lookupTestFiles()
+	if err != nil {
+		r.toRunnerError(err)
 		return
 	}
 
@@ -80,113 +72,92 @@ func (r *coverageRunner) Execute() {
 // processPackage executes go test command with coverage and outputs
 // errors and output into channels so they are combined later in a single
 // file and passed to cov for getting the expected JSON output
-func (r *coverageRunner) processPackage(wg *sync.WaitGroup, fullPath, relPath string, out chan<- string, errs chan<- string) {
-	defer wg.Done()
-
+func (r *coverageRunner) processPackage(rel string) (string, error) {
 	// Create temporary file to output the file coverage
 	// this file is trashed after processing
 	tmp, err := ioutil.TempFile("", "")
 	if err != nil {
-		errs <- err.Error()
-		return
+		return "", err
 	}
 	defer os.Remove(tmp.Name())
 
-	cmd, err := exec.Command("go", "test", "-covermode="+coverMode, "-coverprofile="+tmp.Name(), relPath).CombinedOutput()
+	log.Debugf("go test -covermode=%s -coverprofile=%s %s", coverMode, tmp.Name(), rel)
+	_, err = exec.Command("go", "test", "-covermode="+coverMode, "-coverprofile="+tmp.Name(), rel).CombinedOutput()
 	if err != nil {
-		errs <- string(cmd)
-		return
+		return "", nil
 	}
 
 	// Get file contents
 	b, err := ioutil.ReadFile(tmp.Name())
 	if err != nil {
-		errs <- err.Error()
-		return
+		return "", err
 	}
 
-	out <- string(b)
+	return string(b), nil
 }
 
 // lookupTestFiles crawls the filesystem from the repository path
 // and finds test files using glob, if a package doesn't have tests
 // it is automatically skipped.
-func (r *coverageRunner) lookupTestFiles() {
-	out := make(chan string)
-	errs := make(chan string)
+func (r *coverageRunner) lookupTestFiles() error {
+	pkgs, err := r.packageList()
+	if err != nil {
+		return err
+	}
 
-	wg := &sync.WaitGroup{}
-
-	walker := func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
-			return nil
-		}
-		rel := ""
-		if path != Config.RepositoryPath {
-			rel = strings.Replace(path, Config.RepositoryPath+"/", "", 1)
-		}
-		// Check if path is ignored
-		if r.isIgnored(rel) {
-			return filepath.SkipDir
-		}
-		// Rebuild relative path
-		rel = "./" + rel
-		if files, err := filepath.Glob(rel + "*_test.go"); len(files) == 0 || err != nil {
-			if err != nil {
-				return err
-			}
-			// No test file
-			log.Debugf("No test files in directory %s, skipping", rel)
-			return nil
-		}
+	outc, errc := make(chan string), make(chan string)
+	for _, pkg := range pkgs {
 		// Process package
-		wg.Add(1)
-		go r.processPackage(wg, path, rel, out, errs)
-
-		return nil
-	}
-
-	// Start the crawler
-	if err := filepath.Walk(Config.RepositoryPath, walker); err != nil {
-		r.toRunnerError(err)
-		return
-	}
-
-	// Wait for all routines to complete
-	go func() {
-		wg.Wait()
-		close(out)
-		close(errs)
-	}()
-
-	select {
-	// Get errors (if any) and convert them to a runner error
-	case err, ok := <-errs:
-		if ok {
-			r.toRunnerError(errors.New(err))
-			return
-		}
-	// Get content of the output channel and write it to the temp file
-	// attached to the runner
-	case buff, ok := <-out:
-		if ok {
-			buff = modeRegex.ReplaceAllString(buff, "")
-			buff = "mode: " + coverMode + "\n" + buff
-
-			if err := ioutil.WriteFile(r.tempFile.Name(), []byte(buff), 0644); err != nil {
-				r.toRunnerError(err)
+		go func(p string) {
+			res, err := r.processPackage(p)
+			if err != nil {
+				errc <- err.Error()
 				return
 			}
+			outc <- res
+		}(pkg)
+	}
+
+	buff, errs := "", ""
+	for i := 0; i < len(pkgs); i++ {
+		select {
+		case err := <-errc:
+			errs += err
+
+		case out := <-outc:
+			buff += out
 		}
 	}
+
+	// Get errors (if any) and convert them to a runner error
+	if errs != "" {
+		return errors.New(errs)
+	}
+
+	// Get content of the buffer and write it
+	// to the temp file attached to the runner
+	buff = regexp.MustCompile("mode: [a-z]+\n").ReplaceAllString(buff, "")
+	buff = "mode: " + coverMode + "\n" + buff
+
+	log.Debug(buff)
+
+	if err := ioutil.WriteFile(r.tempFile.Name(), []byte(buff), 0644); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-// isIgnored checks if a path is ignored
-func (r *coverageRunner) isIgnored(path string) bool {
-	for _, i := range r.ignore {
-		if i == path {
-			return true
-		}
+// packageList returns a list of Go-like files or directories from PWD,
+func (r *coverageRunner) packageList() ([]string, error) {
+	cmd, err := exec.Command("sh", "-c", `go list -f '{{.ImportPath}}' ./... | grep -v vendor | grep -v Godeps`).CombinedOutput()
+	if err != nil {
+		return nil, err
 	}
-	return false
+
+	pl := strings.Split(string(cmd), "\n")
+
+	log.Debug(pl)
+
+	return pl, nil
 }
