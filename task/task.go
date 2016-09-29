@@ -63,6 +63,7 @@ func (m *manager) ExecuteRunners() error {
 	// Wait for all runners to complete.
 	wg.Wait()
 
+	// And printout JSON
 	printOutput(m.runners)
 
 	return nil
