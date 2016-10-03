@@ -36,7 +36,7 @@ func (r *thirdPartiesRunner) Execute() {
 }
 
 func (r *thirdPartiesRunner) parseListOutput(output string) (out []string) {
-	reg := regexp.MustCompile(`(?m)([\w\d\-]+)\.([\w]{2,})\/([\w\d\-]+)\/([\w\d\-]+)`)
+	reg := regexp.MustCompile(`(?m)([\w\d\-]+)\.([\w]{2,})\/([\w\d\-]+)\/([\w\d\-]+)(\.v\d+)?`)
 
 	uniq := map[string]bool{}
 	sl := strings.Split(output, ",")
