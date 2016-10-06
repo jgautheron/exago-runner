@@ -1,20 +1,20 @@
 hash: 890f406187c436b4e00935c8a405e759bf47fb3cb53974780b5b6befa3747c98
-updated: 2016-10-03T18:35:35.432056167+02:00
+updated: 2016-10-06T09:13:43.774792261+02:00
 imports:
 - name: github.com/codegangsta/cli
-  version: d53eb991652b1d438abdd34ce4bfa3ef1539108e
+  version: 55f715e28c46073d0e217e2ce8eb46b0b45e3db6
 - name: github.com/hotolab/cov
-  version: fd658b742246039245c1f2d7b17aa13effb4d81c
+  version: c9d12d248a43b5573f92b59f913e95cc8af72235
 - name: github.com/kelseyhightower/envconfig
   version: 13674b2d056fb658a00ba3f36e78043ced07c924
 - name: github.com/Sirupsen/logrus
   version: 3ec0642a7fb6488f65b06f9040adc67e3990296a
 - name: golang.org/x/sys
-  version: 8f0908ab3b2457e2e15403d3697c9ef5cb4b57a9
+  version: 8d1157a435470616f975ff9bb013bea8d0962067
   subpackages:
   - unix
 - name: golang.org/x/tools
-  version: fc2b74b64ef08c618146ebc92062f6499db5314c
+  version: 03663480faa767e684bf17d7c45c65f79d7f5ef3
   subpackages:
   - cover
 testImports: []
