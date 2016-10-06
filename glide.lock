@@ -1,10 +1,10 @@
 hash: 890f406187c436b4e00935c8a405e759bf47fb3cb53974780b5b6befa3747c98
-updated: 2016-10-06T09:13:43.774792261+02:00
+updated: 2016-10-06T11:56:54.943840281+02:00
 imports:
 - name: github.com/codegangsta/cli
   version: 55f715e28c46073d0e217e2ce8eb46b0b45e3db6
 - name: github.com/hotolab/cov
-  version: c9d12d248a43b5573f92b59f913e95cc8af72235
+  version: 9f0bf57921193c062933e9cc478fe14508bc2e0a
 - name: github.com/kelseyhightower/envconfig
   version: 13674b2d056fb658a00ba3f36e78043ced07c924
 - name: github.com/Sirupsen/logrus
