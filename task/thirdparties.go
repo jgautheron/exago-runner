@@ -36,7 +36,7 @@ func (r *thirdPartiesRunner) Execute() {
 }
 
 func (r *thirdPartiesRunner) parseListOutput(output string) (out []string) {
-	reg := regexp.MustCompile(`(?m)([\w\d\-]+)\.([\w]{2,})\/([\w\d\-]+)\/([\w\d\-]+)(\.v\d+)?`)
+	reg := regexp.MustCompile(`(?m)([\w\d\-]+)\.([\w]{2,})\/([\w\d\-]+)\/([\w\d\-\.]+)(\.v\d+)?`)
 	// See https://danott.co/posts/json-marshalling-empty-slices-to-empty-arrays-in-go.html
 	out = make([]string, 0)
 	uniq := map[string]bool{}
