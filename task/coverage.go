@@ -7,6 +7,7 @@ package task
 
 import (
 	"os"
+	"time"
 
 	"github.com/hotolab/cov"
 
@@ -28,6 +29,7 @@ func CoverageRunner() Runnable {
 // Execute gets all the coverage files and returns the output of
 // hotolab/cov
 func (r *coverageRunner) Execute() {
+	defer r.trackTime(time.Now())
 	rep, err := cov.ConvertRepository(Config.Repository)
 	if err != nil {
 		r.toRunnerError(err)
