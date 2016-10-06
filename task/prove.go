@@ -6,9 +6,11 @@
 package task
 
 import (
-	"encoding/json"
-	"os/exec"
 	"time"
+
+	"github.com/karolgorecki/goprove"
+
+	. "github.com/hotolab/exago-runner/config"
 )
 
 type proveRunner struct {
@@ -24,12 +26,12 @@ func ProveRunner() Runnable {
 func (r *proveRunner) Execute() {
 	defer r.trackTime(time.Now())
 
-	checklist := map[string][]map[string]string{}
-	cl, err := exec.Command("goprove", "-output", "json", "-exclude", "testPassing", ".").CombinedOutput()
-	if err != nil {
-		r.toRunnerError(err)
-	}
-	json.Unmarshal(cl, &checklist)
+	passed, failed := goprove.RunTasks(Config.RepositoryPath, []string{})
 
-	r.Data = checklist
+	r.Data = struct {
+		Passed []map[string]interface{} `json:"passed"`
+		Failed []map[string]interface{} `json:"failed"`
+	}{
+		passed, failed,
+	}
 }

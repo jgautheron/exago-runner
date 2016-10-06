@@ -1,12 +1,22 @@
 hash: 890f406187c436b4e00935c8a405e759bf47fb3cb53974780b5b6befa3747c98
-updated: 2016-10-06T11:56:54.943840281+02:00
+updated: 2016-10-06T18:34:26.39237055+02:00
 imports:
 - name: github.com/codegangsta/cli
   version: 55f715e28c46073d0e217e2ce8eb46b0b45e3db6
+- name: github.com/fatih/structs
+  version: dc3312cb1a4513a366c4c9e622ad55c32df12ed3
+- name: github.com/golang/lint
+  version: 55ae771cfa82f3846897c972e262ed5d54d47d48
 - name: github.com/hotolab/cov
   version: 9f0bf57921193c062933e9cc478fe14508bc2e0a
+- name: github.com/karolgorecki/goprove
+  version: 10843a055ac5c965518cc30eca0bbe9222ea69bd
+  subpackages:
+  - util
 - name: github.com/kelseyhightower/envconfig
   version: 13674b2d056fb658a00ba3f36e78043ced07c924
+- name: github.com/ryanuber/go-license
+  version: 027a317812857d68bb611443b5c08bbe96e88598
 - name: github.com/Sirupsen/logrus
   version: 3ec0642a7fb6488f65b06f9040adc67e3990296a
 - name: golang.org/x/sys
@@ -17,4 +27,5 @@ imports:
   version: 03663480faa767e684bf17d7c45c65f79d7f5ef3
   subpackages:
   - cover
+  - go/gcimporter15
 testImports: []
