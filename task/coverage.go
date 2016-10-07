@@ -22,7 +22,7 @@ type coverageRunner struct {
 // CoverageRunner is a runner used for testing Go projects
 func CoverageRunner() Runnable {
 	return &coverageRunner{
-		Runner: Runner{Label: "Code Coverage", parallel: true},
+		Runner: Runner{Label: "Code Coverage"},
 	}
 }
 

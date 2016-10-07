@@ -14,19 +14,19 @@ import (
 	. "github.com/hotolab/exago-runner/config"
 )
 
-// manager contains all registered runnables
-type manager struct {
+// Manager contains all registered runnables
+type Manager struct {
 	runners map[string]Runnable
 }
 
 // NewManager instantiates a runnable manager
 // the manager has the responsibility to execute all runners
 // and decide whether a runner should run in parallel processing or not
-func NewManager() *manager {
+func NewManager() *Manager {
 	// Add repository path to configuration
 	Config.RepositoryPath = fmt.Sprintf("%s/src/%s", os.Getenv("GOPATH"), Config.Repository)
 
-	return &manager{
+	return &Manager{
 		runners: map[string]Runnable{
 			downloadName:     DownloadRunner(),
 			testName:         TestRunner(),
@@ -38,27 +38,30 @@ func NewManager() *manager {
 }
 
 // ExecuteRunners launches the runners
-func (m *manager) ExecuteRunners() error {
+func (m *Manager) ExecuteRunners() error {
+	// Execute download runner synchronously
+	dlr := m.runners[downloadName]
+	// Execute synchronously
+	dlr.Execute()
+	// Exit early if we can't download
+	if dlr.HasError() {
+		return nil
+	}
+
 	var wg sync.WaitGroup
-	for _, ru := range m.runners {
-		if ru.CanParallelize() {
-			// Increment the WaitGroup counter.
-			wg.Add(1)
-			go func(r Runnable) {
-				// Decrement the counter when the goroutine completes.
-				defer wg.Done()
-				// Execute the runner
-				r.Execute()
-			}(ru)
-		} else {
-			// Execute synchronously
-			ru.Execute()
-			// Break if runner has error and should break on error
-			// this only applies to non parallel runners
-			if ru.HasError() && ru.BreakOnError() {
-				break
-			}
+	for n, ru := range m.runners {
+		// Skip download runner
+		if n == downloadName {
+			continue
 		}
+		// Increment the WaitGroup counter.
+		wg.Add(1)
+		go func(r Runnable) {
+			// Decrement the counter when the goroutine completes.
+			defer wg.Done()
+			// Execute the runner
+			r.Execute()
+		}(ru)
 	}
 	// Wait for all runners to complete.
 	wg.Wait()

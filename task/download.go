@@ -6,6 +6,7 @@
 package task
 
 import (
+	"log"
 	"os"
 	"os/exec"
 	"time"
@@ -20,7 +21,7 @@ type downloadRunner struct {
 // DownloadRunner is a runner used for downloading Go projects
 // from remote repositories such as Github, Bitbucket etc.
 func DownloadRunner() Runnable {
-	return &downloadRunner{Runner{Label: "Go Get", breakOnError: true}}
+	return &downloadRunner{Runner{Label: "Go Get"}}
 }
 
 // Execute, downloads a Go repository using the go get command
@@ -52,6 +53,6 @@ func (r *downloadRunner) toRepoDir() {
 	// Change directory
 	err := os.Chdir(Config.RepositoryPath)
 	if err != nil {
-		r.toRunnerError(err)
+		log.Fatal(err)
 	}
 }

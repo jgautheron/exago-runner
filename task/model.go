@@ -41,21 +41,13 @@ type Runner struct {
 
 	// Error returns details about the error
 	Err *RunnerError `json:"error"`
-
-	// Whether runner should execute in parallel or not
-	parallel bool
-
-	// breakOnError will stop execution chain if true
-	breakOnError bool
 }
 
 // Runnable
 type Runnable interface {
 	Name() string
 	Execute()
-	CanParallelize() bool
 	HasError() bool
-	BreakOnError() bool
 }
 
 // Name returns the name of the runner
@@ -67,19 +59,9 @@ func (r *Runner) Name() string {
 func (r *Runner) Execute() {
 }
 
-// CanParallelize tells if runner can be parallelized
-func (r *Runner) CanParallelize() bool {
-	return r.parallel
-}
-
 // HasError tells if runner had some errors during processing
 func (r *Runner) HasError() bool {
 	return r.Err != nil
-}
-
-// BreakOnError tells if runner should break on error
-func (r *Runner) BreakOnError() bool {
-	return r.breakOnError
 }
 
 // toRunnerError converts a golang error to a Runner error

@@ -19,14 +19,14 @@ type proveRunner struct {
 
 // ProveRunner launches goprove
 func ProveRunner() Runnable {
-	return &proveRunner{Runner{Label: "Go Prove", parallel: true}}
+	return &proveRunner{Runner{Label: "Go Prove"}}
 }
 
 // Execute goprove
 func (r *proveRunner) Execute() {
 	defer r.trackTime(time.Now())
 
-	passed, failed := goprove.RunTasks(Config.RepositoryPath, []string{})
+	passed, failed := goprove.RunTasks(Config.RepositoryPath, []string{"projectBuilds"})
 
 	r.Data = struct {
 		Passed []map[string]interface{} `json:"passed"`

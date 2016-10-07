@@ -20,7 +20,7 @@ type thirdPartiesRunner struct {
 
 // ThirdPartiesRunner launches go list to find all dependencies
 func ThirdPartiesRunner() Runnable {
-	return &thirdPartiesRunner{Runner{Label: "Go List (finds all 3rd parties)", parallel: true}}
+	return &thirdPartiesRunner{Runner{Label: "Go List (finds all 3rd parties)"}}
 }
 
 // Execute go list

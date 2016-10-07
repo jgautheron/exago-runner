@@ -32,7 +32,7 @@ type test struct {
 
 // TestRunner is a runner used for testing Go projects
 func TestRunner() Runnable {
-	return &testRunner{Runner{Label: "Go Test", parallel: true}}
+	return &testRunner{Runner{Label: "Go Test"}}
 }
 
 // Execute tests and determine which tests are passing/failing
