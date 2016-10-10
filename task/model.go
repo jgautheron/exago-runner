@@ -15,12 +15,6 @@ const (
 	thirdPartiesName = "thirdparties"
 )
 
-// RunnerError is the struct containing processing errors
-type RunnerError struct {
-	RawOutput string
-	Message   error
-}
-
 // Runner is the struct holding all informations about the runner
 type Runner struct {
 	// Label is the name of the task runner
@@ -40,7 +34,7 @@ type Runner struct {
 	ExecutionTime time.Duration `json:"execution_time"`
 
 	// Error returns details about the error
-	Err *RunnerError `json:"error"`
+	Err string `json:"error"`
 }
 
 // Runnable
@@ -61,15 +55,12 @@ func (r *Runner) Execute() {
 
 // HasError tells if runner had some errors during processing
 func (r *Runner) HasError() bool {
-	return r.Err != nil
+	return r.Err != ""
 }
 
 // toRunnerError converts a golang error to a Runner error
 func (r *Runner) toRunnerError(err error) {
-	r.Err = &RunnerError{
-		RawOutput: err.Error(),
-		Message:   err,
-	}
+	r.Err = err.Error()
 }
 
 // trackTime measures time elapsed given the time passed to the func

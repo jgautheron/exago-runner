@@ -41,7 +41,9 @@ func (r *testRunner) Execute() {
 
 	out, err := exec.Command("bash", "-c", "go test -v $(go list | grep -v vendor | grep -v Godeps)").CombinedOutput()
 	if err != nil {
-		r.toRunnerError(err)
+		if e, ok := err.(*exec.ExitError); ok && !e.Success() {
+			r.toRunnerError(err)
+		}
 	}
 
 	r.RawOutput = string(out)
