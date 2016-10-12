@@ -1,5 +1,5 @@
 hash: 890f406187c436b4e00935c8a405e759bf47fb3cb53974780b5b6befa3747c98
-updated: 2016-10-11T22:35:27.815311259+02:00
+updated: 2016-10-13T00:59:03.533213139+02:00
 imports:
 - name: github.com/codegangsta/cli
   version: 55f715e28c46073d0e217e2ce8eb46b0b45e3db6
@@ -8,9 +8,9 @@ imports:
 - name: github.com/golang/lint
   version: 55ae771cfa82f3846897c972e262ed5d54d47d48
 - name: github.com/hotolab/cov
-  version: 4d1b3033c0b3dd4b28ad89d6b03e0d1c4789b93a
+  version: 6d7ca669644016fbe368ca96be5d77e2af7a7d0a
 - name: github.com/karolgorecki/goprove
-  version: 10843a055ac5c965518cc30eca0bbe9222ea69bd
+  version: 1ada070335341d768e1ffd6e7d8c0c9409aa6103
   subpackages:
   - util
 - name: github.com/kelseyhightower/envconfig
@@ -20,12 +20,17 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
 - name: golang.org/x/sys
-  version: 67f277b6fe017c42fc3b4a445edc999dd99edd58
+  version: 9bb9f0998d48b31547d975974935ae9b48c7a03c
   subpackages:
   - unix
 - name: golang.org/x/tools
-  version: 8453f27cc7e9bc769059b8eb7c88f61da9382d1e
+  version: a2b1312ca0a80d229b6ccb0d0bce33434b07881a
   subpackages:
   - cover
   - go/gcimporter15
+- name: simonwaldherr.de/go/golibs
+  version: beb7ee4ab176f8676000447dd54c6d6bac41bc83
+  subpackages:
+  - as
+  - xmath
 testImports: []
