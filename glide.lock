@@ -1,5 +1,5 @@
 hash: 890f406187c436b4e00935c8a405e759bf47fb3cb53974780b5b6befa3747c98
-updated: 2016-10-13T00:59:03.533213139+02:00
+updated: 2016-10-13T14:20:38.401364723+02:00
 imports:
 - name: github.com/codegangsta/cli
   version: 55f715e28c46073d0e217e2ce8eb46b0b45e3db6
@@ -10,7 +10,7 @@ imports:
 - name: github.com/hotolab/cov
   version: 6d7ca669644016fbe368ca96be5d77e2af7a7d0a
 - name: github.com/karolgorecki/goprove
-  version: 1ada070335341d768e1ffd6e7d8c0c9409aa6103
+  version: 876d06c2a09f28fe76ec0908a6bb28ed8b3126a1
   subpackages:
   - util
 - name: github.com/kelseyhightower/envconfig
