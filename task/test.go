@@ -39,7 +39,7 @@ func TestRunner() Runnable {
 func (r *testRunner) Execute() {
 	defer r.trackTime(time.Now())
 
-	out, err := exec.Command("bash", "-c", "go test -v $(go list ./... | grep -v vendor | grep -v Godeps)").CombinedOutput()
+	out, err := exec.Command("bash", "-c", "go test -race -v $(go list ./... | grep -v vendor | grep -v Godeps)").CombinedOutput()
 	if err != nil {
 		if e, ok := err.(*exec.ExitError); ok && !e.Success() {
 			r.toRunnerError(err)
