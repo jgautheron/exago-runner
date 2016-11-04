@@ -6,12 +6,11 @@
 package task
 
 import (
+	"errors"
 	"log"
 	"os"
 	"os/exec"
 	"time"
-
-	. "github.com/hotolab/exago-runner/config"
 )
 
 type downloadRunner struct {
@@ -20,8 +19,10 @@ type downloadRunner struct {
 
 // DownloadRunner is a runner used for downloading Go projects
 // from remote repositories such as Github, Bitbucket etc.
-func DownloadRunner() Runnable {
-	return &downloadRunner{Runner{Label: "Go Get"}}
+func DownloadRunner(m *Manager) Runnable {
+	return &downloadRunner{
+		Runner: Runner{Label: "Go Get", Mgr: m},
+	}
 }
 
 // Execute, downloads a Go repository using the go get command
@@ -30,16 +31,26 @@ func (r *downloadRunner) Execute() {
 	defer r.trackTime(time.Now())
 
 	// Return early if repository is already in the GOPATH
-	if _, err := os.Stat(Config.RepositoryPath); err == nil {
+	if _, err := os.Stat(r.Manager().RepositoryPath()); err == nil {
 		r.toRepoDir()
 		return
 	}
 
 	// Go get the package
-	out, err := exec.Command("go", "get", "-d", "-t", Config.Repository+"/...").CombinedOutput()
+	p := []string{"get", "-d", "-t"}
+	if r.Manager().Shallow() {
+		p = append(p, "-s")
+	}
+	rep := r.Manager().Repository()
+	if r.Manager().Reference() != "" {
+		rep += ":" + r.Manager().Reference()
+	}
+	p = append(p, rep+"/...")
+
+	out, err := exec.Command("go", p...).CombinedOutput()
 	if err != nil {
 		// If we can't download, stop execution as BreakOnError is true with this runner
-		r.toRunnerError(err)
+		r.toRunnerError(errors.New(string(out)))
 		return
 	}
 
@@ -51,7 +62,7 @@ func (r *downloadRunner) Execute() {
 
 func (r *downloadRunner) toRepoDir() {
 	// Change directory
-	err := os.Chdir(Config.RepositoryPath)
+	err := os.Chdir(r.Manager().RepositoryPath())
 	if err != nil {
 		log.Fatal(err)
 	}

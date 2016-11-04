@@ -9,32 +9,73 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 
-	. "github.com/hotolab/exago-runner/config"
+	log "github.com/Sirupsen/logrus"
 )
 
 // Manager contains all registered runnables
 type Manager struct {
-	runners map[string]Runnable
+	runners        map[string]Runnable
+	repository     string
+	repositoryPath string
+	shallow        bool
+	reference      string
 }
 
 // NewManager instantiates a runnable manager
 // the manager has the responsibility to execute all runners
 // and decide whether a runner should run in parallel processing or not
-func NewManager() *Manager {
-	// Add repository path to configuration
-	Config.RepositoryPath = fmt.Sprintf("%s/src/%s", os.Getenv("GOPATH"), Config.Repository)
-
-	return &Manager{
-		runners: map[string]Runnable{
-			downloadName:     DownloadRunner(),
-			testName:         TestRunner(),
-			coverageName:     CoverageRunner(),
-			proveName:        ProveRunner(),
-			thirdPartiesName: ThirdPartiesRunner(),
-		},
+func NewManager(r string) *Manager {
+	if strings.TrimSpace(r) == "" {
+		log.Fatal("Repository is required")
 	}
+
+	m := &Manager{
+		repository:     r,
+		repositoryPath: fmt.Sprintf("%s/src/%s", os.Getenv("GOPATH"), r),
+	}
+
+	m.runners = map[string]Runnable{
+		downloadName:     DownloadRunner(m),
+		testName:         TestRunner(m),
+		coverageName:     CoverageRunner(m),
+		proveName:        ProveRunner(m),
+		thirdPartiesName: ThirdPartiesRunner(m),
+	}
+
+	return m
+}
+
+// DoShallow sets shallow flag to true
+func (m *Manager) DoShallow() {
+	m.shallow = true
+}
+
+// Shallow returns shallow flag
+func (m *Manager) Shallow() bool {
+	return m.shallow
+}
+
+// UseReference sets reference flag
+func (m *Manager) UseReference(r string) {
+	m.reference = r
+}
+
+// Reference returns reference
+func (m *Manager) Reference() string {
+	return m.reference
+}
+
+// RepositoryPath returns repository path
+func (m *Manager) RepositoryPath() string {
+	return m.repositoryPath
+}
+
+// Repository returns repository (e.g. :vcs/:owner/:package+)
+func (m *Manager) Repository() string {
+	return m.repository
 }
 
 // ExecuteRunners launches the runners
@@ -45,7 +86,7 @@ func (m *Manager) ExecuteRunners() error {
 	dlr.Execute()
 	// Exit early if we can't download
 	if dlr.HasError() {
-		return nil
+		return dlr.Error()
 	}
 
 	var wg sync.WaitGroup

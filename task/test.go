@@ -31,8 +31,10 @@ type test struct {
 }
 
 // TestRunner is a runner used for testing Go projects
-func TestRunner() Runnable {
-	return &testRunner{Runner{Label: "Go Test"}}
+func TestRunner(m *Manager) Runnable {
+	return &testRunner{
+		Runner{Label: "Go Test", Mgr: m},
+	}
 }
 
 // Execute tests and determine which tests are passing/failing

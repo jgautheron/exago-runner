@@ -10,8 +10,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
-
-	. "github.com/hotolab/exago-runner/config"
+	"github.com/hotolab/exago-runner/task"
 )
 
 var (
@@ -29,34 +28,42 @@ func init() {
 
 	// Version is injected at build-time
 	App.Version = ""
+	App.Action = func(c *cli.Context) error {
+		m := task.NewManager(c.Args().Get(0))
+		if c.Bool("shallow") {
+			m.DoShallow()
+		}
+		if c.String("ref") != "" {
+			m.UseReference(c.String("ref"))
+		}
+		return m.ExecuteRunners()
+	}
 
-	InitializeConfig()
-	InitializeLogging(Config.LogLevel)
+	App.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name:  "shallow",
+			Usage: "enables shallow cloning",
+		},
+		cli.StringFlag{
+			Name:  "ref",
+			Usage: "reference passed when cloning (branch or SHA1)",
+		},
+	}
+
+	InitializeLogging(os.Getenv("LOG_LEVEL"))
 }
 
 func main() {
-	AddCommands()
 	if err := App.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}
-}
-
-// AddCommands adds child commands to the root command Cmd.
-func AddCommands() {
-	AddCommand(RunnerCommand())
-}
-
-// AddCommand adds a child command.
-func AddCommand(cmd cli.Command) {
-	App.Commands = append(App.Commands, cmd)
 }
 
 // InitializeLogging sets logrus log level.
 func InitializeLogging(logLevel string) {
 	// If log level cannot be resolved, exit gracefully
 	if logLevel == "" {
-		log.Warning("Log level could not be resolved, fallback to fatal")
-		log.SetLevel(log.FatalLevel)
+		log.SetLevel(log.InfoLevel)
 		return
 	}
 	// Parse level from string

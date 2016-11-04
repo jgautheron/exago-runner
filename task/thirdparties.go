@@ -10,8 +10,6 @@ import (
 	"regexp"
 	"strings"
 	"time"
-
-	. "github.com/hotolab/exago-runner/config"
 )
 
 type thirdPartiesRunner struct {
@@ -19,8 +17,10 @@ type thirdPartiesRunner struct {
 }
 
 // ThirdPartiesRunner launches go list to find all dependencies
-func ThirdPartiesRunner() Runnable {
-	return &thirdPartiesRunner{Runner{Label: "Go List (finds all 3rd parties)"}}
+func ThirdPartiesRunner(m *Manager) Runnable {
+	return &thirdPartiesRunner{
+		Runner{Label: "Go List (finds all 3rd parties)", Mgr: m},
+	}
 }
 
 // Execute go list
@@ -54,7 +54,7 @@ func (r *thirdPartiesRunner) parseListOutput(output string) (out []string) {
 		// That way we support imports made this way:
 		// github.com/heroku/hk/Godeps/_workspace/src/code.google.com/p/go-uuid/uuid
 		lastMatch := m[len(m)-1]
-		if lastMatch == Config.Repository {
+		if lastMatch == r.Manager().Repository() {
 			continue
 		}
 

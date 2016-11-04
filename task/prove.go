@@ -9,8 +9,6 @@ import (
 	"time"
 
 	"github.com/karolgorecki/goprove"
-
-	. "github.com/hotolab/exago-runner/config"
 )
 
 type proveRunner struct {
@@ -18,15 +16,17 @@ type proveRunner struct {
 }
 
 // ProveRunner launches goprove
-func ProveRunner() Runnable {
-	return &proveRunner{Runner{Label: "Go Prove"}}
+func ProveRunner(m *Manager) Runnable {
+	return &proveRunner{
+		Runner{Label: "Go Prove", Mgr: m},
+	}
 }
 
 // Execute goprove
 func (r *proveRunner) Execute() {
 	defer r.trackTime(time.Now())
 
-	passed, failed := goprove.RunTasks(Config.RepositoryPath, []string{"projectBuilds"})
+	passed, failed := goprove.RunTasks(r.Manager().RepositoryPath(), []string{"projectBuilds"})
 
 	r.Data = struct {
 		Passed []map[string]interface{} `json:"passed"`

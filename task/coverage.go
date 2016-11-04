@@ -10,8 +10,6 @@ import (
 	"time"
 
 	"github.com/hotolab/cov"
-
-	. "github.com/hotolab/exago-runner/config"
 )
 
 type coverageRunner struct {
@@ -20,9 +18,9 @@ type coverageRunner struct {
 }
 
 // CoverageRunner is a runner used for testing Go projects
-func CoverageRunner() Runnable {
+func CoverageRunner(m *Manager) Runnable {
 	return &coverageRunner{
-		Runner: Runner{Label: "Code Coverage"},
+		Runner: Runner{Label: "Code Coverage", Mgr: m},
 	}
 }
 
@@ -30,7 +28,7 @@ func CoverageRunner() Runnable {
 // hotolab/cov
 func (r *coverageRunner) Execute() {
 	defer r.trackTime(time.Now())
-	rep, err := cov.ConvertRepository(Config.Repository)
+	rep, err := cov.ConvertRepository(r.Manager().Repository())
 	if err != nil {
 		r.toRunnerError(err)
 		return

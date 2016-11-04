@@ -5,7 +5,10 @@
 
 package task
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 const (
 	downloadName     = "download"
@@ -35,6 +38,9 @@ type Runner struct {
 
 	// Error returns details about the error
 	Err string `json:"error"`
+
+	// Mgr holds the manager instance
+	Mgr *Manager `json:"-"`
 }
 
 // Runnable
@@ -42,6 +48,13 @@ type Runnable interface {
 	Name() string
 	Execute()
 	HasError() bool
+	Error() error
+	Manager() *Manager
+}
+
+// Manager returns the current manager
+func (r *Runner) Manager() *Manager {
+	return r.Mgr
 }
 
 // Name returns the name of the runner
@@ -56,6 +69,14 @@ func (r *Runner) Execute() {
 // HasError tells if runner had some errors during processing
 func (r *Runner) HasError() bool {
 	return r.Err != ""
+}
+
+// Error returns a golang error
+func (r *Runner) Error() error {
+	if !r.HasError() {
+		return nil
+	}
+	return errors.New(r.Err)
 }
 
 // toRunnerError converts a golang error to a Runner error
