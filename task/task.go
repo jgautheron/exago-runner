@@ -6,7 +6,6 @@
 package task
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -79,14 +78,14 @@ func (m *Manager) Repository() string {
 }
 
 // ExecuteRunners launches the runners
-func (m *Manager) ExecuteRunners() error {
+func (m *Manager) ExecuteRunners() (interface{}, error) {
 	// Execute download runner synchronously
 	dlr := m.runners[downloadName]
 	// Execute synchronously
 	dlr.Execute()
 	// Exit early if we can't download
 	if dlr.HasError() {
-		return dlr.Error()
+		return nil, dlr.Error()
 	}
 
 	var wg sync.WaitGroup
@@ -107,13 +106,5 @@ func (m *Manager) ExecuteRunners() error {
 	// Wait for all runners to complete.
 	wg.Wait()
 
-	// And printout JSON
-	printOutput(m.runners)
-
-	return nil
-}
-
-func printOutput(o interface{}) {
-	enc := json.NewEncoder(os.Stdout)
-	enc.Encode(o)
+	return m.runners, nil
 }

@@ -6,6 +6,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 
 	log "github.com/Sirupsen/logrus"
@@ -36,7 +37,16 @@ func init() {
 		if c.String("ref") != "" {
 			m.UseReference(c.String("ref"))
 		}
-		return m.ExecuteRunners()
+
+		out, err := m.ExecuteRunners()
+		if err != nil {
+			return err
+		}
+
+		enc := json.NewEncoder(os.Stdout)
+		enc.Encode(out)
+
+		return nil
 	}
 
 	App.Flags = []cli.Flag{
