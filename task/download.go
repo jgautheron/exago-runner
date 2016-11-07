@@ -7,7 +7,6 @@ package task
 
 import (
 	"errors"
-	"log"
 	"os"
 	"os/exec"
 	"time"
@@ -27,13 +26,12 @@ func DownloadRunner(m *Manager) Runnable {
 
 // Execute, downloads a Go repository using the go get command
 // too bad, we can't do this as a library :/
-func (r *downloadRunner) Execute() {
+func (r *downloadRunner) Execute() error {
 	defer r.trackTime(time.Now())
 
 	// Return early if repository is already in the GOPATH
 	if _, err := os.Stat(r.Manager().RepositoryPath()); err == nil {
-		r.toRepoDir()
-		return
+		return r.toRepoDir()
 	}
 
 	// Go get the package
@@ -50,20 +48,21 @@ func (r *downloadRunner) Execute() {
 	out, err := exec.Command("go", p...).CombinedOutput()
 	if err != nil {
 		// If we can't download, stop execution as BreakOnError is true with this runner
-		r.toRunnerError(errors.New(string(out)))
-		return
+		return errors.New(string(out))
 	}
 
 	r.RawOutput = string(out)
 
 	// cd into repository
-	r.toRepoDir()
+	return r.toRepoDir()
 }
 
-func (r *downloadRunner) toRepoDir() {
+func (r *downloadRunner) toRepoDir() error {
 	// Change directory
 	err := os.Chdir(r.Manager().RepositoryPath())
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }

@@ -38,11 +38,7 @@ func init() {
 			m.UseReference(c.String("ref"))
 		}
 
-		out, err := m.ExecuteRunners()
-		if err != nil {
-			return err
-		}
-
+		out := m.ExecuteRunners()
 		enc := json.NewEncoder(os.Stdout)
 		enc.Encode(out)
 

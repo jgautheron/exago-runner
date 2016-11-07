@@ -24,15 +24,17 @@ func ThirdPartiesRunner(m *Manager) Runnable {
 }
 
 // Execute go list
-func (r *thirdPartiesRunner) Execute() {
+func (r *thirdPartiesRunner) Execute() error {
 	defer r.trackTime(time.Now())
 
 	list, err := exec.Command("go", "list", "-f", `'{{ join .Deps ", " }}'`, "./...").CombinedOutput()
 	if err != nil {
-		r.toRunnerError(err)
+		return err
 	}
 
 	r.Data = r.parseListOutput(string(list))
+
+	return nil
 }
 
 func (r *thirdPartiesRunner) parseListOutput(output string) (out []string) {

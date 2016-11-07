@@ -26,13 +26,14 @@ func CoverageRunner(m *Manager) Runnable {
 
 // Execute gets all the coverage files and returns the output of
 // hotolab/cov
-func (r *coverageRunner) Execute() {
+func (r *coverageRunner) Execute() error {
 	defer r.trackTime(time.Now())
 	rep, err := cov.ConvertRepository(r.Manager().Repository())
 	if err != nil {
-		r.toRunnerError(err)
-		return
+		return err
 	}
 
 	r.Data = rep
+
+	return nil
 }

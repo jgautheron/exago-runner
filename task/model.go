@@ -5,10 +5,7 @@
 
 package task
 
-import (
-	"errors"
-	"time"
-)
+import "time"
 
 const (
 	downloadName     = "download"
@@ -36,19 +33,14 @@ type Runner struct {
 	// ExecutionTime is the time that task took to complete
 	ExecutionTime time.Duration `json:"execution_time"`
 
-	// Error returns details about the error
-	Err string `json:"error"`
-
 	// Mgr holds the manager instance
 	Mgr *Manager `json:"-"`
 }
 
-// Runnable
+// Runnable interface
 type Runnable interface {
 	Name() string
-	Execute()
-	HasError() bool
-	Error() error
+	Execute() error
 	Manager() *Manager
 }
 
@@ -64,24 +56,6 @@ func (r *Runner) Name() string {
 
 // Execute launches the runner
 func (r *Runner) Execute() {
-}
-
-// HasError tells if runner had some errors during processing
-func (r *Runner) HasError() bool {
-	return r.Err != ""
-}
-
-// Error returns a golang error
-func (r *Runner) Error() error {
-	if !r.HasError() {
-		return nil
-	}
-	return errors.New(r.Err)
-}
-
-// toRunnerError converts a golang error to a Runner error
-func (r *Runner) toRunnerError(err error) {
-	r.Err = err.Error()
 }
 
 // trackTime measures time elapsed given the time passed to the func

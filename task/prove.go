@@ -23,7 +23,7 @@ func ProveRunner(m *Manager) Runnable {
 }
 
 // Execute goprove
-func (r *proveRunner) Execute() {
+func (r *proveRunner) Execute() error {
 	defer r.trackTime(time.Now())
 
 	passed, failed := goprove.RunTasks(r.Manager().RepositoryPath(), []string{"projectBuilds"})
@@ -34,4 +34,6 @@ func (r *proveRunner) Execute() {
 	}{
 		passed, failed,
 	}
+
+	return nil
 }

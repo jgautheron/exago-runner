@@ -10,13 +10,14 @@ import (
 	"os"
 	"strings"
 	"sync"
-
-	log "github.com/Sirupsen/logrus"
 )
 
 // Manager contains all registered runnables
 type Manager struct {
-	runners        map[string]Runnable
+	Success bool                `json:"success"`
+	Errors  map[string]string   `json:"errors,omitempty"`
+	Runners map[string]Runnable `json:"data,omitempty"`
+
 	repository     string
 	repositoryPath string
 	shallow        bool
@@ -27,16 +28,18 @@ type Manager struct {
 // the manager has the responsibility to execute all runners
 // and decide whether a runner should run in parallel processing or not
 func NewManager(r string) *Manager {
-	if strings.TrimSpace(r) == "" {
-		log.Fatal("Repository is required")
-	}
-
 	m := &Manager{
 		repository:     r,
 		repositoryPath: fmt.Sprintf("%s/src/%s", os.Getenv("GOPATH"), r),
+		Errors:         make(map[string]string),
 	}
 
-	m.runners = map[string]Runnable{
+	if strings.TrimSpace(r) == "" {
+		m.Errors[downloadName] = "Repository is required"
+		return m
+	}
+
+	m.Runners = map[string]Runnable{
 		downloadName:     DownloadRunner(m),
 		testName:         TestRunner(m),
 		coverageName:     CoverageRunner(m),
@@ -78,33 +81,45 @@ func (m *Manager) Repository() string {
 }
 
 // ExecuteRunners launches the runners
-func (m *Manager) ExecuteRunners() (interface{}, error) {
+func (m *Manager) ExecuteRunners() interface{} {
 	// Execute download runner synchronously
-	dlr := m.runners[downloadName]
+	dlr := m.Runners[downloadName]
 	// Execute synchronously
-	dlr.Execute()
+	err := dlr.Execute()
 	// Exit early if we can't download
-	if dlr.HasError() {
-		return nil, dlr.Error()
+	if err != nil {
+		m.Errors[downloadName] = err.Error()
+		m.Runners = nil
+		return m
 	}
 
 	var wg sync.WaitGroup
-	for n, ru := range m.runners {
+	for n, ru := range m.Runners {
 		// Skip download runner
 		if n == downloadName {
 			continue
 		}
 		// Increment the WaitGroup counter.
 		wg.Add(1)
-		go func(r Runnable) {
+		go func(r Runnable, name string) {
 			// Decrement the counter when the goroutine completes.
 			defer wg.Done()
 			// Execute the runner
-			r.Execute()
-		}(ru)
+			err := r.Execute()
+			if err != nil {
+				m.Errors[name] = err.Error()
+			}
+		}(ru, n)
 	}
+
 	// Wait for all runners to complete.
 	wg.Wait()
 
-	return m.runners, nil
+	if len(m.Errors) == 0 {
+		m.Success = true
+	} else {
+		m.Runners = nil
+	}
+
+	return m
 }

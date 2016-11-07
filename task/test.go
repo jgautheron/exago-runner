@@ -6,6 +6,7 @@
 package task
 
 import (
+	"errors"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -38,18 +39,20 @@ func TestRunner(m *Manager) Runnable {
 }
 
 // Execute tests and determine which tests are passing/failing
-func (r *testRunner) Execute() {
+func (r *testRunner) Execute() error {
 	defer r.trackTime(time.Now())
 
-	out, err := exec.Command("bash", "-c", "go test -race -v $(go list ./... | grep -v vendor | grep -v Godeps)").CombinedOutput()
+	out, err := exec.Command("bash", "-c", "go test -v $(go list ./... | grep -v vendor | grep -v Godeps)").CombinedOutput()
 	if err != nil {
 		if e, ok := err.(*exec.ExitError); ok && !e.Success() {
-			r.toRunnerError(err)
+			return errors.New(string(out))
 		}
 	}
 
 	r.RawOutput = string(out)
 	r.parseTestOutput()
+
+	return nil
 }
 
 // parseTestOutput parses test output and fills Data property
