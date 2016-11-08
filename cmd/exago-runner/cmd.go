@@ -31,9 +31,7 @@ func init() {
 	App.Version = ""
 	App.Action = func(c *cli.Context) error {
 		m := task.NewManager(c.Args().Get(0))
-		if c.Bool("shallow") {
-			m.DoShallow()
-		}
+
 		if c.String("ref") != "" {
 			m.UseReference(c.String("ref"))
 		}
@@ -46,10 +44,6 @@ func init() {
 	}
 
 	App.Flags = []cli.Flag{
-		cli.BoolFlag{
-			Name:  "shallow",
-			Usage: "enables shallow cloning",
-		},
 		cli.StringFlag{
 			Name:  "ref",
 			Usage: "reference passed when cloning (branch or SHA1)",

@@ -35,10 +35,7 @@ func (r *downloadRunner) Execute() error {
 	}
 
 	// Go get the package
-	p := []string{"get", "-d", "-t"}
-	if r.Manager().Shallow() {
-		p = append(p, "-s")
-	}
+	p := []string{"get", "-d", "-t", "-s"}
 	rep := r.Manager().Repository()
 	if r.Manager().Reference() != "" {
 		rep += ":" + r.Manager().Reference()

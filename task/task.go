@@ -20,7 +20,6 @@ type Manager struct {
 
 	repository     string
 	repositoryPath string
-	shallow        bool
 	reference      string
 }
 
@@ -41,6 +40,7 @@ func NewManager(r string) *Manager {
 
 	m.Runners = map[string]Runnable{
 		downloadName:     DownloadRunner(m),
+		locName:          LocRunner(m),
 		testName:         TestRunner(m),
 		coverageName:     CoverageRunner(m),
 		proveName:        ProveRunner(m),
@@ -48,16 +48,6 @@ func NewManager(r string) *Manager {
 	}
 
 	return m
-}
-
-// DoShallow sets shallow flag to true
-func (m *Manager) DoShallow() {
-	m.shallow = true
-}
-
-// Shallow returns shallow flag
-func (m *Manager) Shallow() bool {
-	return m.shallow
 }
 
 // UseReference sets reference flag

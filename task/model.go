@@ -13,6 +13,7 @@ const (
 	coverageName     = "coverage"
 	proveName        = "goprove"
 	thirdPartiesName = "thirdparties"
+	locName          = "golocc"
 )
 
 // Runner is the struct holding all informations about the runner
