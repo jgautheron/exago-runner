@@ -1,30 +1,32 @@
 hash: 890f406187c436b4e00935c8a405e759bf47fb3cb53974780b5b6befa3747c98
-updated: 2016-10-13T14:20:38.401364723+02:00
+updated: 2016-11-30T09:20:29.025650267+01:00
 imports:
 - name: github.com/codegangsta/cli
-  version: 55f715e28c46073d0e217e2ce8eb46b0b45e3db6
+  version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
 - name: github.com/fatih/structs
   version: dc3312cb1a4513a366c4c9e622ad55c32df12ed3
 - name: github.com/golang/lint
-  version: 55ae771cfa82f3846897c972e262ed5d54d47d48
+  version: 206c0f020eba0f7fbcfbc467a5eb808037df2ed6
 - name: github.com/hotolab/cov
-  version: 6d7ca669644016fbe368ca96be5d77e2af7a7d0a
+  version: 7cb67fdd20074aa2123305bc6952176525087682
+- name: github.com/jgautheron/golocc
+  version: 8380b9ccfc8269d83c7fb6a9375e27bc162d59e7
 - name: github.com/karolgorecki/goprove
   version: 876d06c2a09f28fe76ec0908a6bb28ed8b3126a1
   subpackages:
   - util
 - name: github.com/kelseyhightower/envconfig
-  version: ac12b1f15efba734211a556d8b125110dc538016
+  version: 9aca109c9aec4633fced9717c4a09ecab3d33111
 - name: github.com/ryanuber/go-license
   version: 027a317812857d68bb611443b5c08bbe96e88598
 - name: github.com/Sirupsen/logrus
-  version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
+  version: e400ff7861bce9661cf37c162ce3b7b303baf333
 - name: golang.org/x/sys
-  version: 9bb9f0998d48b31547d975974935ae9b48c7a03c
+  version: d5645953809d8b4752afb2c3224b1f1ad73dfa70
   subpackages:
   - unix
 - name: golang.org/x/tools
-  version: a2b1312ca0a80d229b6ccb0d0bce33434b07881a
+  version: b66e054640c8249b6bc92cebffaec2bcf8b5efd0
   subpackages:
   - cover
   - go/gcimporter15
