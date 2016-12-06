@@ -1,5 +1,5 @@
 hash: 890f406187c436b4e00935c8a405e759bf47fb3cb53974780b5b6befa3747c98
-updated: 2016-11-30T09:20:29.025650267+01:00
+updated: 2016-12-06T18:50:46.351735121+01:00
 imports:
 - name: github.com/codegangsta/cli
   version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
@@ -12,21 +12,21 @@ imports:
 - name: github.com/jgautheron/golocc
   version: 8380b9ccfc8269d83c7fb6a9375e27bc162d59e7
 - name: github.com/karolgorecki/goprove
-  version: 876d06c2a09f28fe76ec0908a6bb28ed8b3126a1
+  version: 7511a42ce3043963cf924fbca49b88ac0650eb7d
   subpackages:
   - util
 - name: github.com/kelseyhightower/envconfig
-  version: 9aca109c9aec4633fced9717c4a09ecab3d33111
+  version: 5c008110b20b657eb7e005b83d0a5f6aa6bb5f4b
 - name: github.com/ryanuber/go-license
   version: 027a317812857d68bb611443b5c08bbe96e88598
 - name: github.com/Sirupsen/logrus
-  version: e400ff7861bce9661cf37c162ce3b7b303baf333
+  version: 881bee4e20a5d11a6a88a5667c6f292072ac1963
 - name: golang.org/x/sys
-  version: d5645953809d8b4752afb2c3224b1f1ad73dfa70
+  version: 478fcf54317e52ab69f40bb4c7a1520288d7f7ea
   subpackages:
   - unix
 - name: golang.org/x/tools
-  version: b66e054640c8249b6bc92cebffaec2bcf8b5efd0
+  version: ae1141fc8b3e38d9e074b383af516745815897c3
   subpackages:
   - cover
   - go/gcimporter15
